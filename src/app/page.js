@@ -1,103 +1,132 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+import React, { useEffect, useState } from 'react'
+
+
+function Notes() {
+
+
+const [note, setNote] = useState("")
+const [title, setTitle] = useState("")
+const [notes, setNotes] = useState([])
+const [color, setColor] = useState("#EBF6F2" )
+const [models, setModels] = useState(false)
+const [editId,setEditId] = useState(null)
+const colors = ['#F9CED7',"#FFF8A7","#B0CDEB" ,"#EBF6F2" ,"#F24822","#4e81f8d0"]
+
+const handleNotes = () => { 
+  if(note.trim() === "" && title.trim() === "") return
+
+  if(editId){
+    const ubdateNotes = notes.map((n) => n.id === editId ?  {...n,text: note, title: title, color: color} : n)
+    setNotes(ubdateNotes)
+    setEditId(null)
+  }else{
+  const newNote = {   id: `${Date.now()}-${Math.floor(Math.random() * 100000)}`,  text:note ,title:title, color:color}
+  setNotes([...notes, newNote])
+
+  }
+setNote("")
+setModels(false)
+setTitle("")
+
 }
+const handleDelete=(id) => {
+  const deleteNote = notes.filter((n) => n.id !== id)
+  setNotes(deleteNote)
+}
+const startEdit = (note) => {
+    setEditId(note.id)
+    setTitle(note.title)
+    setNote(note.text)
+    setColor(note.color)
+    setModels(true) 
+  }
+
+useEffect(() => {
+    const saved = localStorage.getItem("lest_notes")
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+       const normalized = parsed.map((n, idx) => ({
+    id: n.id ?? `${Date.now()}-${idx}-${Math.floor(Math.random()*100000)}`,
+    text: n.text ?? "",
+    title: n.title ?? "",
+    color: n.color ?? "#EBF6F2",
+}))
+        setNotes(normalized)
+      } catch (e) {
+        console.error("Failed to parse saved notes:", e)
+        setNotes([])
+      }
+    }
+  }, [])
+
+useEffect(() => {
+  localStorage.setItem("lest_notes",JSON.stringify(notes))
+},[notes])
+  return (
+    <div className='  h-full w-full'>
+
+      <div className=' flex justify-center  w-full h-full  ' >
+        <div className='w-[500px]  flex flex-col gap-1 justify-center items-center  mt-20'>
+       <h1 className="text-[27px] text-[#cec391]  font-bold mb-4">📒 Welcome to Notepad Web</h1>
+        <button onClick={() => setModels(true)} className='w-[310px] text-[25px] text-[#FFFFFF]   font-bold rounded-[10px]  h-[47px] bg-[#3471FF] text-center hover:bg-[#223970]'> New Note </button>
+        </div>
+        </div>
+        <div className='flex flex-wrap gap-4 p-6 items-start'>
+           {notes.map((not) => (
+          <div key={not.id} className='w-[250px] min-h-[150px]  shadow-2xl  gap-22 text-[18px]  p-4 rounded-xl wrap-break-word '
+          style={{backgroundColor:not.color}}>
+                <h2 className="font-bold text-xl">{not.title}</h2>
+          <hr className="my-2"/>
+
+            <p className='whitespace-pre-line'>{not.text}</p>
+
+            <button 
+              onClick={() => startEdit(not)} 
+              className="mt-2 px-3 py-1 bg-[#223970] text-white rounded hover:bg-[#111c3a]">
+               Edit
+            </button>
+            <button 
+              onClick={() => handleDelete(not.id)} 
+              className="mt-2 ml-2 px-3 py-1 bg-[#223970] text-white rounded hover:bg-[#111c3a]">
+               Delete
+            </button>
+          </div>
+        ))}
+        </div>
+       
+        {models && (
+          <div className='fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center'>
+            <div className='bg-white p-6 rounded shadow-lg w-[400px] flex flex-col gap-3'>  
+
+              <input value={title} onChange={(e) => setTitle(e.target.value)} className='border p-2 rounded w-full' />         
+              <hr></hr>
+            <textarea value={note} placeholder='fares' onChange={(e) => setNote(e.target.value) } className='border p-2 rounded w-full min-h-[100px]'  />
+          <div className='flex flex-wrap gap-2 my-2'>
+            {colors .map((c) => (
+          <button key={c} onClick={() => setColor(c)} className={`w-8 h-8 rounded-full border-2 ${color === c ? "border-black" : "border-amber-600"}`} style={{backgroundColor:c}}></button>
+              
+            ))}
+          <div className='flex gap-3 justify-end'> 
+          <button onClick={handleNotes} className='w-[100px] text-[20px] text-[#FFFFFF]   font-bold rounded-[10px]  h-[47px] bg-[#3471FF] text-center hover:bg-[#223970]' >
+            {editId !== null ? "Update" : "Add"}
+            </button>
+          <button onClick={() =>  {setEditId(null), setModels(false)}} className='w-[100px] text-[20px] text-[#FFFFFF]   font-bold rounded-[10px]  h-[47px] bg-[#3471FF] text-center hover:bg-[#223970]' >Close</button>
+          </div>
+          </div>
+            </div>
+          </div>
+        )}
+
+
+      
+
+
+    </div>
+  )
+}
+
+export default Notes
