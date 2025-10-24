@@ -59,9 +59,7 @@ useEffect(() => {
       } catch (e) {
         console.error("Failed to parse saved notes:", e)
         setNotes([])
-      }
-    }
-  }, [])
+      }}},[])
 
 useEffect(() => {
   localStorage.setItem("lest_notes",JSON.stringify(notes))
@@ -102,9 +100,9 @@ useEffect(() => {
           <div className='fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center'>
             <div className='bg-white p-6 rounded shadow-lg w-[400px] flex flex-col gap-3'>  
 
-              <input value={title} onChange={(e) => setTitle(e.target.value)} className='border p-2 rounded w-full' />         
+              <input type='text' placeholder='Title' value={title} onChange={(e) => setTitle(e.target.value)} className='border p-2 rounded w-full' />         
               <hr></hr>
-            <textarea value={note} placeholder='fares' onChange={(e) => setNote(e.target.value) } className='border p-2 rounded w-full min-h-[100px]'  />
+            <textarea  value={note} placeholder='fares' onChange={(e) => setNote(e.target.value) } className='border p-2 rounded w-full min-h-[100px]'  />
           <div className='flex flex-wrap gap-2 my-2'>
             {colors .map((c) => (
           <button key={c} onClick={() => setColor(c)} className={`w-8 h-8 rounded-full border-2 ${color === c ? "border-black" : "border-amber-600"}`} style={{backgroundColor:c}}></button>
