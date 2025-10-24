@@ -102,7 +102,7 @@ useEffect(() => {
 
               <input type='text' placeholder='Title' value={title} onChange={(e) => setTitle(e.target.value)} className='border p-2 rounded w-full' />         
               <hr></hr>
-            <textarea  value={note} placeholder='fares' onChange={(e) => setNote(e.target.value) } className='border p-2 rounded w-full min-h-[100px]'  />
+            <textarea  value={note} placeholder='Add text' onChange={(e) => setNote(e.target.value) } className='border p-2 rounded w-full min-h-[100px]'  />
           <div className='flex flex-wrap gap-2 my-2'>
             {colors .map((c) => (
           <button key={c} onClick={() => setColor(c)} className={`w-8 h-8 rounded-full border-2 ${color === c ? "border-black" : "border-amber-600"}`} style={{backgroundColor:c}}></button>
